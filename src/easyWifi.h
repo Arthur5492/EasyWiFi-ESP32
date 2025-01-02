@@ -57,6 +57,7 @@ class EasyWifi
      void clearWebServerPointers();
     //Getters
     const char* get_ssidStored() { return _ssidStored; };
+    const bool get_isProtected() { return _isProtected; };
     const char* get_passwdStored() { return _passwdStored; };
     
   private:
