@@ -85,7 +85,7 @@ async function checkConnectionStatus() {
     const message = await response.text();
     
     if (response.status === 200) {
-      showMsg(message, 'success');
+      showMsg(message, 'success',5000);
       isConnecting = false;
       elements.connectBtn.disabled = false;
       elements.connectBtn.textContent = 'Connect';
@@ -94,7 +94,7 @@ async function checkConnectionStatus() {
     }
     
     if (response.status === 202) {
-      showMsg(message);
+      showMsg(message,6000);
       setTimeout(checkConnectionStatus, 3000);
       return false;
     }
@@ -167,11 +167,11 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
-function showMsg(msg, type = '') {
+function showMsg(msg, type = '', timeout=3000) {
   const status = document.getElementById('status-message');
   status.textContent = msg;
   status.className = `status-message active ${type}`;
-  setTimeout(() => status.className = 'status-message', 3000);
+  setTimeout(() => status.className = 'status-message', timeout);
 }
 
 function getSignalIcon(rssi) {

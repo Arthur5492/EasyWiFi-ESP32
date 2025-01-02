@@ -5,8 +5,12 @@
 //Singleton
 EasyWifi easyWifi;
 
-void EasyWifi::setup()
+void EasyWifi::setup(const char* CaptivePortalSSID, const char* CaptivePortalPassword, unsigned long CaptivePortalTimeout)
 {
+  _CaptivePortalSSID = CaptivePortalSSID;
+  _CaptivePortalPassword = CaptivePortalPassword;
+  _CaptivePortalTimeout = CaptivePortalTimeout;
+
   if(NVS_RetrieveWifiData())
     connectWifi();
   else
@@ -16,9 +20,7 @@ void EasyWifi::setup()
 /// @return True if connection was successful, false if Failed
 bool EasyWifi::connectWifi()
 {
-  Serial.printf("SSID:%s, passwd:%s, isEncrypted:%d\n",_ssidStored,_passwdStored,_isEncrypted);
-  
-  if(_isEncrypted)
+  if(_isProtected)
     WiFi.begin(_ssidStored,_passwdStored);
   else
     WiFi.begin(_ssidStored);
@@ -44,7 +46,7 @@ void EasyWifi::loop()
     return;
 
   //Captive Portal Timeout Verification
-  if(millis() - _serverStartTime >= CaptivePortalTimeout)
+  if(millis() - _serverStartTime >= _CaptivePortalTimeout)
   {
     Serial.println("Captive Portal Timeout, shutting down...");
     logoutCaptivePortal();
@@ -80,7 +82,7 @@ bool EasyWifi::NVS_RetrieveWifiData()
   //Retrieve Data 
   size_t ssidLength = _wifiDataNVS.getString(NVS_KEY_SSID, _ssidStored, SSID_MAX_LENGTH);
   size_t passwdLength = _wifiDataNVS.getString(NVS_KEY_PASSWD, _passwdStored, PASSWORD_MAX_LENGTH);
-  _isEncrypted = _wifiDataNVS.getBool(NVS_KEY_ISENCRYPTED);
+  _isProtected = _wifiDataNVS.getBool(NVS_KEY_ISPROTECTED);
 
   //Check if SSID Exists
   if(ssidLength <= 0)
@@ -91,7 +93,7 @@ bool EasyWifi::NVS_RetrieveWifiData()
   }
 
   //Check if Password is Encrypted and correctly retrieved
-  if(_isEncrypted && passwdLength <= 0)
+  if(_isProtected && passwdLength <= 0)
   {
     Serial.println("Error: Password retrieval failed or empty for encrypted network.");
     _wifiDataNVS.end();
@@ -125,15 +127,23 @@ bool EasyWifi::NVS_SaveWifiSettings()
 
   _wifiDataNVS.clear();
 
+  //NVS returns 0 if error occurs
   bool ssidCheck = _wifiDataNVS.putString(NVS_KEY_SSID, _ssidStored) != 0;
-  bool passwordCheck = _wifiDataNVS.putString(NVS_KEY_PASSWD, _passwdStored) != 0;
-  bool isEncryptedCheck = _wifiDataNVS.putBool(NVS_KEY_ISENCRYPTED, _isEncrypted);
+  bool isProtectedCheck = _wifiDataNVS.putBool(NVS_KEY_ISPROTECTED, _isProtected);
+  bool passwordCheck = true;
 
-  if(!ssidCheck || !passwordCheck || !isEncryptedCheck)
+  if(_isProtected && isProtectedCheck) //If network is protected and suceffuly saved on nvs
+  {
+    _wifiDataNVS.putString(NVS_KEY_PASSWD, _passwdStored);
+    passwordCheck = _wifiDataNVS.putString(NVS_KEY_PASSWD, _passwdStored) != 0;
+  }
+
+  if(!ssidCheck || !isProtectedCheck || !passwordCheck)
   {
     Serial.println("Error saving data in NVS");
     return false;
   }
+
 
   Serial.printf("SSID: %s saved on NVS\n",_ssidStored);
   _wifiDataNVS.end();

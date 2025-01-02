@@ -7,11 +7,6 @@
 #define _EASY_WIFI_H_
 #pragma once
 
-//? EasyWifi Configs
-#define CaptivePortalSSID "Configure_ESP32" //max 63 char
-#define CaptivePortalPassword "12345678" //min 8 char, for open use NULL
-#define CaptivePortalTimeout 300000 // 5 minutes default (300000)ms
-
 #include <Arduino.h>
 #include <FS.h>
 #include <WiFi.h>
@@ -20,13 +15,25 @@
 #include <Preferences.h>
 #include <LittleFS.h>
 
+
+
+#define AP_DEFAULT_SSID "Configure ESP32"
+#define AP_DEFAULT_TIMEOUT 180000 //3 minutes
+
+#define SSID_MAX_LENGTH     32 + 1 // Values according to WLAN standart
+#define PASSWORD_MAX_LENGTH 64 + 1 //+1 to null terminator 
+    
 class EasyWifi
 {
   public:
     EasyWifi() = default;
 
     //Core Methods
-    void setup(); 
+    ///@param CaptivePortalSSID SSID of the Captive Portal - Max 33 characters
+    ///@param CaptivePortalPassword Password of the Captive Portal, leave empty for open network
+    ///@param CaptivePortalTimeout Timeout in milliseconds to wait for a sucefful connection - 3min default
+    void setup(const char* CaptivePortalSSID=AP_DEFAULT_SSID, const char* CaptivePortalPassword="", unsigned long CaptivePortalTimeout =AP_DEFAULT_TIMEOUT); 
+
     void loop(); 
     bool connectWifi();
 
@@ -54,19 +61,23 @@ class EasyWifi
     
   private:
     
+    //?User configs
+    String _CaptivePortalSSID; //sry for using String
+    String _CaptivePortalPassword;
+    unsigned long _CaptivePortalTimeout; //5 minutes default(300000)
+
     // Captive Portal
     AsyncWebServer *_server = nullptr; //Pointer to reduce memory usage
     DNSServer *_dnsServer = nullptr;
     unsigned long _serverStartTime = 0;
     
     //SSID and Password default max length according to WLAN standart
-    static constexpr size_t SSID_MAX_LENGTH = 32 + 1;    // +1 to null terminator
-    static constexpr size_t PASSWORD_MAX_LENGTH = 64 + 1; // +1 to null terminator
+
 
     //?NVS Stored Wi-Fi Credentials
     char _ssidStored[SSID_MAX_LENGTH] = {0}; //Network SSID
     char _passwdStored[PASSWORD_MAX_LENGTH] = {0}; //Network Password
-    bool _isEncrypted = false; //Network is encrypted or Open(no password)
+    bool _isProtected = false; //Network is protected or Open(no password)
 
     //Wifi Connection setup
     bool _wifiIsReadyToConnect = false;
@@ -79,7 +90,7 @@ class EasyWifi
     static constexpr const char* NVS_NAMESPACE       = "wifiDataNVS";
     static constexpr const char* NVS_KEY_SSID        = "ssid";
     static constexpr const char* NVS_KEY_PASSWD      = "password";
-    static constexpr const char* NVS_KEY_ISENCRYPTED = "isEncrypted";
+    static constexpr const char* NVS_KEY_ISPROTECTED = "isProtected";
     static constexpr const bool  NVS_READ_WRITE      = false;
     static constexpr const bool  NVS_READ_ONLY       = true;
 };

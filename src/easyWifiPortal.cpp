@@ -6,7 +6,7 @@ void EasyWifi::startCaptivePortal()
     return;
 
   WiFi.mode(WIFI_AP_STA); //AP for cap portal STA for scanNetworks
-  WiFi.softAP(CaptivePortalSSID, CaptivePortalPassword);
+  WiFi.softAP(_CaptivePortalSSID, _CaptivePortalPassword);
 
   _server = new AsyncWebServer(80);
   _dnsServer = new DNSServer();
@@ -105,7 +105,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
   //Get all data from the form
   String ssid = request->arg("ssid");
   String passwd = request->arg("password");
-  _isEncrypted = request->hasArg("isProtected");
+  _isProtected = request->arg("isProtected") == "1"; //"0" = Open Network, "1" = Encrypted Network
 
   //Check if the SSID is Empty
   if(ssid.length() <= 0)
@@ -114,7 +114,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
     return;
   }
 
-  if(_isEncrypted && passwd.length() < 8)
+  if(_isProtected && passwd.length() < 8)
   {
     request->send(400, "text/plain", "Password must have at least 8 characters");
     return;
