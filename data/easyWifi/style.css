@@ -1,7 +1,7 @@
 /*==========================================================================
   Reset and Base Configurations
   ========================================================================== */
-   * {
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -335,6 +335,9 @@
 }
 
 .scan-button.loading {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
   animation: pulse 1.5s infinite;
 }
 

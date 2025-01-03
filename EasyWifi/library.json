@@ -1,0 +1,28 @@
+{
+  "name": "EasyWifi",
+  "version": "0.0.3",
+  "description": "Wireless WiFi Connection Handler, using AsyncWebServer,LittleFS, Preferences for ESP32",
+  "keywords": ["wifi", "esp32", "captive portal", "easywifi", "iot"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arthur5492/EasyWifi"
+  },
+  "authors": [
+    {
+      "name": "Arthur Fernandes",
+      "email": "arthurofr@gmail.com",
+      "url": "https://github.com/Arthur5492",
+      "maintainer": true
+    }
+  ],
+  "frameworks": ["arduino"],
+  "platforms": ["espressif32"],
+  "dependencies": [
+    {
+      "owner": "me-no-dev",
+      "name": "ESP Async WebServer",
+      "version": "^1.2.4",
+      "platforms": "espressif32"
+    }
+  ]
+}
