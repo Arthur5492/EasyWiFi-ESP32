@@ -46,11 +46,13 @@ class EasyWifi
     EasyWifi() = default;
 
     //Core Methods
+
     ///@param CaptivePortalSSID SSID of the Captive Portal - Max 33 characters
     ///@param CaptivePortalPassword Password of the Captive Portal, leave empty for open network
     ///@param CaptivePortalTimeout Timeout in milliseconds to wait for a sucefful connection - 3min default
     void setup(const char* CaptivePortalSSID=AP_DEFAULT_SSID, const char* CaptivePortalPassword=AP_DEFAULT_PASSWORD, unsigned long CaptivePortalTimeout =AP_DEFAULT_TIMEOUT); 
 
+    /// @brief Check all events, including the state machine 
     void loop(); 
     bool connectWifi();
     

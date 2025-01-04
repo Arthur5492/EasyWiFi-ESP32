@@ -196,6 +196,6 @@ void EasyWifi::logoutCaptivePortal()
     _dnsServer->stop();
   
   clearWebServerPointers();
-
+  WiFi.softAPdisconnect(true);
   Serial.printf("Captive Portal ended\n");
 }
