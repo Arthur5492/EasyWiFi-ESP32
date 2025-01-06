@@ -1,29 +1,41 @@
-/**
- * @file easyWifi.h
- * @brief Handles Wi-Fi management with captive portal setup, NVS storage.
- * @author Arthur Github: https://github.com/Arthur5492
+/*
+ EasyWifi.h Handles Wi-Fi management for ESP32 devices
+ Copyright (c) 2025 Arthur Fernandes. All right reserved.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#ifndef _EASY_WIFI_H_
-#define _EASY_WIFI_H_
 #pragma once
 
 #include <Arduino.h>
-#include <FS.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <DNSServer.h>
 #include <Preferences.h>
 #include <LittleFS.h>
 
+//TODO: Implement embedded frontend, maybe with platformio.ini: board_build.embed_txtfiles or directly with EEPROM
+//TODO: Implement multi wifi stored, perhaps with a json in littlefs(tip: setting up scanNetworks first and then check if any ssid stored matches with networks discovered)
 
 
 #define AP_DEFAULT_SSID "Configure ESP32"
-#define AP_DEFAULT_TIMEOUT 300000 
 #define AP_DEFAULT_PASSWORD ""
+#define AP_DEFAULT_TIMEOUT 300000 //5 minutes default(300000)
 
 //SSID and Password default max length according to WLAN standart
 #define SSID_MAX_LENGTH     32
-#define PASSWORD_MAX_LENGTH 63
+#define PASSWORD_MAX_LENGTH 64
 
 enum class WIFI_STATUS{
   ERROR = -1,
@@ -46,27 +58,29 @@ class EasyWifi
     EasyWifi() = default;
 
     //Core Methods
+    ///@param ssid SSID of the Captive Portal - Max 32 characters
+    ///@param passwd Password of the Captive Portal, leave empty for open network
+    ///@param timeout Timeout in ms for captive portal
+    void setup(const char* ssid=nullptr, const char* passwd=nullptr, unsigned long timeout=0); 
 
-    ///@param CaptivePortalSSID SSID of the Captive Portal - Max 33 characters
-    ///@param CaptivePortalPassword Password of the Captive Portal, leave empty for open network
-    ///@param CaptivePortalTimeout Timeout in milliseconds to wait for a sucefful connection - 3min default
-    void setup(const char* CaptivePortalSSID=AP_DEFAULT_SSID, const char* CaptivePortalPassword=AP_DEFAULT_PASSWORD, unsigned long CaptivePortalTimeout =AP_DEFAULT_TIMEOUT); 
-
-    /// @brief Check all events, including the state machine 
-    void loop(); 
+    void loop(); //Check all events
     bool connectWifi();
-    
     void scanNetworks();
 
     //Captive Portal
     void startCaptivePortal(); 
     void logoutCaptivePortal();
     void checkCaptivePortalTimeout();
-    void serveStaticRoutes();
+    
     String sendJsonNetworks();
 
+    //Serve AsyncWebServer Routes
+    void serveScanRoutes();
+    void serveWifiRoutes();
+    void serveStaticRoutes();
+
     // Web Server Controllers
-    void checkWifiScanController(AsyncWebServerRequest *request);
+    void checkScanController(AsyncWebServerRequest *request);
     void SaveWiFiDataController(AsyncWebServerRequest *request);
     void checkWiFiStatusController(AsyncWebServerRequest *request);
     void redirectToIpController(AsyncWebServerRequest *request);
@@ -77,7 +91,7 @@ class EasyWifi
     bool NVS_RetrieveWifiData();
     
     //Helpers
-    void clearWebServerPointers();
+    void freePointers();
 
     //Getters
     const char* get_ssidStored() { return _ssidStored; };
@@ -90,31 +104,28 @@ class EasyWifi
   private:
     
     //?User configs
-    String _CaptivePortalSSID; //sry for using String
-    String _CaptivePortalPassword;
-    unsigned long _CaptivePortalTimeout; //5 minutes default(300000)
+    String _CaptivePortalSSID = AP_DEFAULT_SSID; //sry for using String
+    String _CaptivePortalPassword = AP_DEFAULT_PASSWORD;
+    unsigned long _CaptivePortalTimeout = AP_DEFAULT_TIMEOUT;
 
     // Captive Portal
     AsyncWebServer *_server = nullptr; //Pointer to reduce memory usage
     DNSServer *_dnsServer = nullptr;
     unsigned long _serverStartTime = 0;
     
-    //?NVS Stored Wi-Fi Credentials
+    //?NVS (Stores Wi-Fi Credentials)
+    Preferences _wifiDataNVS;
     char _ssidStored[SSID_MAX_LENGTH] = {0}; //Network SSID
     char _passwdStored[PASSWORD_MAX_LENGTH] = {0}; //Network Password
     bool _isProtected = false; //Network is protected or Open(no password)
-    Preferences _wifiDataNVS;
     
     //Helpers
+    String EASYWIFI_ROUTE = "/easyWifi";
     int16_t _avaibleNetworks = -1;
-    
     SCAN_STATUS _scanStatus = SCAN_STATUS::NOT_RUNNING;
     WIFI_STATUS _wifiStatus = WIFI_STATUS::IDLE;
 
-    
-
-    //? Just Constants, ignore
-    #define EASYWIFI_ROUTE "/easyWifi"
+    //? Just Constants, ignore them
     static constexpr const char* NVS_NAMESPACE       = "wifiDataNVS";
     static constexpr const char* NVS_KEY_SSID        = "ssid";
     static constexpr const char* NVS_KEY_PASSWD      = "password";
@@ -125,5 +136,3 @@ class EasyWifi
 
 //Singleton
 extern EasyWifi easyWifi;
-
-#endif
