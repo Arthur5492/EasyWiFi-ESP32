@@ -164,7 +164,7 @@ void EasyWifi::serveStaticRoutes()
 {
     if(!LittleFS.begin() && LittleFS.open("/easyWifi/", "r")){
         Serial.println("LittleFS Failed, please check if the /data/easyWifi folder exists");
-        return;
+        while(true) delay(10); //Stop the program 
     }
 
   // All static routes are served from /easyWifi folder
