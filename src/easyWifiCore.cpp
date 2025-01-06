@@ -5,28 +5,29 @@
 //Singleton
 EasyWifi easyWifi;
 
-void EasyWifi::setup(const char* CaptivePortalSSID, const char* CaptivePortalPassword, unsigned long CaptivePortalTimeout)
+void EasyWifi::setup(const char* ssid, const char* passwd, unsigned long timeout)
 {
-  _CaptivePortalSSID = CaptivePortalSSID;
-  _CaptivePortalPassword = CaptivePortalPassword;
-  _CaptivePortalTimeout = CaptivePortalTimeout;
-
+  if(ssid!=nullptr)   _CaptivePortalSSID = ssid;
+  if(passwd!=nullptr) _CaptivePortalPassword = passwd;
+  if(timeout!=0)      _CaptivePortalTimeout = timeout;
+  
   if(NVS_RetrieveWifiData())
     connectWifi();
   else
   {
-    scanNetworks();
+    scanNetworks(); 
     startCaptivePortal();
   }
 }
 
+/// @brief Check all events, including the state machine 
 void EasyWifi::loop()
 { 
   if(!_server)
     return;
 
   checkCaptivePortalTimeout();
-
+  
   if(_dnsServer && WiFi.softAPgetStationNum() > 0) //If there are clients connected to the AP
     _dnsServer->processNextRequest(); 
 
@@ -41,8 +42,7 @@ void EasyWifi::loop()
 bool EasyWifi::connectWifi()
 {
   _wifiStatus = WIFI_STATUS::CONNECTING;
-
-  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  WiFi.setAutoReconnect(false); // avoid reconnecting to network if WiFi conn fails, will be re-enabled after connection
 
   if(_isProtected)
     WiFi.begin(_ssidStored,_passwdStored);
@@ -54,17 +54,18 @@ bool EasyWifi::connectWifi()
   //While loop inside waitForConnectResult, with a timeout parameter
   if(WiFi.waitForConnectResult(8000) != WL_CONNECTED)
   {
-     _wifiStatus = WIFI_STATUS::ERROR;
-     Serial.printf("Failed connection to: %s, continuing to soft AP.\n",_ssidStored);
-     WiFi.disconnect(true,true); //Disconnect and remove saved wifi settings, to avoid autoconnect to a wrong network
+    _wifiStatus = WIFI_STATUS::ERROR;  
+
+    Serial.printf("Failed connection to: %s, continuing to soft AP.\n",_ssidStored);
     startCaptivePortal();
     return false;
   }
 
-  
+  Serial.printf("Connected to: %s\n", _ssidStored);
+
   NVS_SaveWifiSettings();  
   _wifiStatus = WIFI_STATUS::CONNECTED;
-  Serial.printf("Connected to: %s\n", _ssidStored);
+  WiFi.setAutoReconnect(true); //Re-enable auto reconnect by default
   return true;
 }
 
@@ -115,8 +116,8 @@ bool EasyWifi::NVS_RetrieveWifiData()
   return true;
 }
 
-bool EasyWifi::NVS_Clear() {
-  
+bool EasyWifi::NVS_Clear() 
+{
   _wifiDataNVS.begin(NVS_NAMESPACE, NVS_READ_WRITE);
 
   if(_wifiDataNVS.clear() == false)
@@ -160,27 +161,3 @@ bool EasyWifi::NVS_SaveWifiSettings()
   return true;
 }
 
-void EasyWifi::clearWebServerPointers()
-{
-  if(_dnsServer)
-  {
-    delete _dnsServer;
-    _dnsServer = nullptr;
-  }
-
-  if(_server)
-  { 
-    delete _server;
-    _server = nullptr;
-  }
-}
-
-void EasyWifi::checkCaptivePortalTimeout()
-{
-  if(millis() - _serverStartTime >= _CaptivePortalTimeout)
-  {
-    Serial.println("Captive Portal Timeout, shutting down...");
-    logoutCaptivePortal();
-    return;
-  } 
-}
