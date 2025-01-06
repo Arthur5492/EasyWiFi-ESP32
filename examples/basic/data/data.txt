@@ -1,0 +1,2 @@
+Copy the data folder in my repo https://github.com/Arthur5492/EasyWiFiPortal-ESP32/
+paste in the root of your platformio project
