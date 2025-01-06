@@ -64,7 +64,7 @@ class EasyWifi
     void setup(const char* ssid=nullptr, const char* passwd=nullptr, unsigned long timeout=0); 
 
     void loop(); //Check all events
-    bool connectWifi();
+    bool connectWifi(bool disableautoreconnect);
     void scanNetworks();
 
     //Captive Portal

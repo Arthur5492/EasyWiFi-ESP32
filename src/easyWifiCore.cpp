@@ -12,7 +12,7 @@ void EasyWifi::setup(const char* ssid, const char* passwd, unsigned long timeout
   if(timeout!=0)      _CaptivePortalTimeout = timeout;
   
   if(NVS_RetrieveWifiData())
-    connectWifi();
+    connectWifi(true);
   else
   {
     scanNetworks(); 
@@ -32,17 +32,19 @@ void EasyWifi::loop()
     _dnsServer->processNextRequest(); 
 
   if(_wifiStatus == WIFI_STATUS::READY_TO_CONNECT)
-    connectWifi();
+    connectWifi(true);
 
   if(_scanStatus == SCAN_STATUS::READY_TO_SCAN)
     scanNetworks();
 }
 
+/// @param disableautoreconnect Disable auto reconnect if conn failed
 /// @return True if connection was successful, false if Failed
-bool EasyWifi::connectWifi()
+bool EasyWifi::connectWifi(bool disableautoreconnect)
 {
   _wifiStatus = WIFI_STATUS::CONNECTING;
-  WiFi.setAutoReconnect(false); // avoid reconnecting to network if WiFi conn fails, will be re-enabled after connection
+  if(disableautoreconnect)
+    WiFi.setAutoReconnect(false); // avoid reconnecting to network if WiFi conn fails, will be re-enabled after connection
 
   if(_isProtected)
     WiFi.begin(_ssidStored,_passwdStored);
@@ -55,8 +57,8 @@ bool EasyWifi::connectWifi()
   if(WiFi.waitForConnectResult(8000) != WL_CONNECTED)
   {
     _wifiStatus = WIFI_STATUS::ERROR;  
-
     Serial.printf("Failed connection to: %s, continuing to soft AP.\n",_ssidStored);
+
     startCaptivePortal();
     return false;
   }
