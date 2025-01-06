@@ -25,9 +25,9 @@
 #include <Preferences.h>
 #include <LittleFS.h>
 
+//TODO: Implement private debug methods
 //TODO: Implement embedded frontend, maybe with platformio.ini: board_build.embed_txtfiles or directly with EEPROM
 //TODO: Implement multi wifi stored, perhaps with a json in littlefs(tip: setting up scanNetworks first and then check if any ssid stored matches with networks discovered)
-
 
 #define AP_DEFAULT_SSID "Configure ESP32"
 #define AP_DEFAULT_PASSWORD ""
@@ -63,7 +63,7 @@ class EasyWifi
     ///@param timeout Timeout in ms for captive portal
     void setup(const char* ssid=nullptr, const char* passwd=nullptr, unsigned long timeout=0); 
 
-    void loop(); //Check all events
+    void update(); //Check all events
     bool connectWifi(bool disableautoreconnect);
     void scanNetworks();
 
@@ -112,6 +112,7 @@ class EasyWifi
     AsyncWebServer *_server = nullptr; //Pointer to reduce memory usage
     DNSServer *_dnsServer = nullptr;
     unsigned long _serverStartTime = 0;
+    bool isCaptivePortalEnabled = false;
     
     //?NVS (Stores Wi-Fi Credentials)
     Preferences _wifiDataNVS;

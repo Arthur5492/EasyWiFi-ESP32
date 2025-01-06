@@ -21,14 +21,14 @@ void EasyWifi::setup(const char* ssid, const char* passwd, unsigned long timeout
 }
 
 /// @brief Check all events, including the state machine 
-void EasyWifi::loop()
+void EasyWifi::update()
 { 
-  if(!_server)
+  if(!isCaptivePortalEnabled)
     return;
 
   checkCaptivePortalTimeout();
   
-  if(_dnsServer && WiFi.softAPgetStationNum() > 0) //If there are clients connected to the AP
+  if(_dnsServer) 
     _dnsServer->processNextRequest(); 
 
   if(_wifiStatus == WIFI_STATUS::READY_TO_CONNECT)
@@ -65,8 +65,8 @@ bool EasyWifi::connectWifi(bool disableautoreconnect)
 
   Serial.printf("Connected to: %s\n", _ssidStored);
 
-  NVS_SaveWifiSettings();  
   _wifiStatus = WIFI_STATUS::CONNECTED;
+  NVS_SaveWifiSettings();  
   WiFi.setAutoReconnect(true); //Re-enable auto reconnect by default
   return true;
 }

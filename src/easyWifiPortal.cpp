@@ -2,7 +2,7 @@
 
 void EasyWifi::startCaptivePortal()
 {
-  if(_server) //If server is already running
+  if(isCaptivePortalEnabled) //If server is already running
     return;
 
   WiFi.mode(WIFI_AP_STA); //AP for cap portal STA for scanNetworks
@@ -24,6 +24,7 @@ void EasyWifi::startCaptivePortal()
 
 
   _server->begin();
+  isCaptivePortalEnabled = true;
   _serverStartTime = millis();
   Serial.println("Captive Portal initializated\n");
 }
@@ -195,6 +196,8 @@ String EasyWifi::sendJsonNetworks()
 
 void EasyWifi::logoutCaptivePortal()
 {
+  isCaptivePortalEnabled = false;
+
   if(_server)
     _server->end();
   
@@ -202,6 +205,7 @@ void EasyWifi::logoutCaptivePortal()
     _dnsServer->stop();
   
   delay(2000); //Wait for server to end, dns to process last requests and user be able to see the connected message
+
   freePointers();
   WiFi.mode(WIFI_STA); //Back to station mode
   Serial.printf("Captive Portal ended\n");
