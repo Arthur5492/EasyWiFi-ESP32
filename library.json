@@ -5,8 +5,9 @@
   "keywords": ["wifi", "esp32", "captive portal", "easywifi", "iot"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Arthur5492/EasyWifi"
+    "url": "https://github.com/Arthur5492/EasyWiFiPortal-ESP32"
   },
+  "license": "LGPL-2.1-or-later",
   "authors": [
     {
       "name": "Arthur Fernandes",
@@ -17,12 +18,21 @@
   ],
   "frameworks": ["arduino"],
   "platforms": ["espressif32"],
-  "dependencies": [
+  "headers": "easyWifi.h",
+  "dependencies": {
+    "ESP Async WebServer": "^1.2.4"
+  },
+  "examples": [
     {
-      "owner": "me-no-dev",
-      "name": "ESP Async WebServer",
-      "version": "^1.2.4",
-      "platforms": "espressif32"
+      "name": "Basic Example",
+      "base": "examples/basic"
+    },
+    {
+      "name": "Check Stored Data",
+      "base": "examples/checkStoredData"
     }
-  ]
+  ],
+  "export":{
+    "exclude":"data"
+  }
 }
