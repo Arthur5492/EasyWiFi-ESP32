@@ -21,7 +21,7 @@
     ====================================================================*/
   
   /**
-   * Sends a request to the `/save` endpoint with SSID, password, and protection status.
+   * Sends a request to the `/start-wifi` endpoint with SSID, password, and protection status.
    * After saving, it waits for connection status via checkConnectionStatus().
    */
   async function connect(ssid, pass, isProtected) {
@@ -30,9 +30,10 @@
     try {
       // Update flags and UI
       isConnecting = true;
-      disableButton(elements.connectBtn, 'Connecting...');
+      elements.connectBtn.disabled = true;
+      elements.connectBtn.textContent = "connecting...";
   
-      const response = await fetch('/save', {
+      const response = await fetch('/start-wifi', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: new URLSearchParams({ ssid, password: pass, isProtected })
@@ -59,16 +60,18 @@
   /**
    * Initiates or monitors the network scan process by calling `/start-scan` and `/scan-status`.
    */
-  async function scanNetworks() {
+  async function scanNetworks(skipScan) {
     try {
       // If not already scanning, request the backend to start scanning
       if (!isScanning) {
         isScanning = true;
         elements.scanBtn.classList.add('loading');
   
-        const res_startScan = await fetch('/start-scan');
-        if (!res_startScan.ok) {
-          throw new Error('Error starting Scan');
+        if(!skipScan)
+        {
+          const res_startScan = await fetch('/start-scan');
+          if (!res_startScan.ok)
+            throw new Error('Error starting Scan');
         }
       }
   
@@ -294,4 +297,4 @@
   });
   
   // Automatically start scanning when the page loads
-  scanNetworks();
+  scanNetworks(true);
