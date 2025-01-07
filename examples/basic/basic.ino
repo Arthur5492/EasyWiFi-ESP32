@@ -3,8 +3,7 @@
 ! On Arduino IDE you need to manually run the gen_frontend_header.py once to generate the frontend.h file
 */
 
-#include <Arduino.h>
-#include "easyWifi.h"
+#include <easyWifi.h>
 
 // Optional: Define a custom timeout for the Captive Portal (in milliseconds)
 #define SHUTDOWN_TIMEOUT 180000 //You can define the timeout for the captive portal to shutdown
@@ -16,7 +15,7 @@ void setup() {
   easyWifi.setup();
 
   // Example 2: Customize all at once
-  // easyWifi.setup("MyESP32", "mypassword", SHUTDOWN_TIMEOUT);
+  // easyWifi.setup("MyESP32", "12345678", SHUTDOWN_TIMEOUT);
 }
 
 void loop() {

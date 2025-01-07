@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WiFi Setup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link id="favicon" rel="icon" type="image/svg+xml"> <!-- favicon added dinamically in js-->
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      Select WiFi Network
+    </div>
+    <div class="wifi-list" id="wifi-list">
+      <!-- Networks will be inserted here -->
+    </div>
+      <button class="scan-button" id="scan-button">
+        <!-- icon wifi-find added dinamically in js-->
+      </button>
+  </div>
+
+  <div class="password-modal" id="password-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Enter Password</div>
+        <div class="modal-subtitle" id="modal-network-name"></div>
+      </div>
+      <input type="text" class="password-input" id="password-input" placeholder="WiFi Password">
+      <div class="button-group">
+        <button class="button button-cancel" id="cancel-button">Cancel</button>
+        <button class="button button-connect" id="connect-button">Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-message" id="status-message"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

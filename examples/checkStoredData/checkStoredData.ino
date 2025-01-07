@@ -1,10 +1,12 @@
-#include <Arduino>
-#include "easyWifi.h"
+// Description: This example shows how to check the stored data in the ESP32's flash memory.
+
+#include <easyWifi.h>
 
 void setup()
 {
     Serial.begin(115200);
     easyWifi.setup();
+    //easyWifi.setup("esp32 config", 12345678, 300000); //You can customize the captive portal
 }
 
 void loop()
