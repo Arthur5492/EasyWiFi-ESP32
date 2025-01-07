@@ -1,0 +1,9 @@
+Copy the data folder in my repo https://github.com/Arthur5492/EasyWiFiPortal-ESP32/
+paste in the root of your platformio project, only works for LittleFS FS
+
+Please read the docs:
+
+Platformio: https://docs.platformio.org/en/latest/platforms/espressif32.html#uploading-files-to-file-system
+
+Arduino IDE: read littleFS Installation and Arduino ESP32 LittleFS filesystem upload tool 
+https://github.com/lorol/LITTLEFS

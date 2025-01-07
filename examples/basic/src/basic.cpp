@@ -1,9 +1,7 @@
 /*
 * This is a basic example of how to use the easyWifi library in platformio.
-* I didn't set up to Arduino IDE, but it should be similar.
+! On Arduino IDE you need to manually run the gen_frontend_header.py once to generate the frontend.h file
 */
-
-//!!! Remember to set up the /data/easyWifi directory!!!
 
 #include <Arduino.h>
 #include "easyWifi.h"
@@ -22,7 +20,7 @@ void setup() {
 }
 
 void loop() {
-  easyWifi.loop(); //Just like that
+  easyWifi.update(); //Just like that
   //.... Your code here
   delay(10);
 }

@@ -4,13 +4,12 @@
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Starting EasyWifi...");
     easyWifi.setup();
 }
 
 void loop()
 {
-    easyWifi.loop();
+    easyWifi.update();
     
     if(WiFi.isConnected())
     {
