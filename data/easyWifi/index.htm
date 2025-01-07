@@ -3,8 +3,8 @@
 <head>
   <title>WiFi Setup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="easyWifi/style.css">
-  <link rel="icon" href="easyWifi/icons/wifi-find.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <link id="favicon" rel="icon" type="image/svg+xml"> <!-- favicon added dinamically in js-->
 </head>
 <body>
   <div class="container">
@@ -15,7 +15,7 @@
       <!-- Networks will be inserted here -->
     </div>
       <button class="scan-button" id="scan-button">
-        <img src="easyWifi/icons/wifi-find.svg" alt="Scan Networks" width="30" height="30">
+        <!-- icon wifi-find added dinamically in js-->
       </button>
   </div>
 
@@ -35,6 +35,6 @@
 
   <div class="status-message" id="status-message"></div>
 
-  <script src="easyWifi/main.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

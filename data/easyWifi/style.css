@@ -113,10 +113,10 @@
   background: #f8f8f8;
 }
 
-.wifi-icon {
+.wifi-icon svg{
   margin-right: 14px;
   color: #007aff;
-  display: flex;
+  display: inline-block;
   align-items: center;
 }
 
@@ -321,6 +321,11 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.scanbutton svg {
+  width: 2rem;
+  height: auto;
 }
 
 .scan-button:hover {
