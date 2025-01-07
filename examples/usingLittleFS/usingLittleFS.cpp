@@ -17,7 +17,8 @@
 
 void setup()
 {
-  easyWifi.setup();
+  easyWifi.setup(); //Same as always
+  //easyWifi.setup("esp32 config", 12345678, 300000); //You can customize the captive portal
 }
 
 void loop()
