@@ -51,19 +51,19 @@ bool EasyWifi::connectWifi(bool disableautoreconnect)
   else
     WiFi.begin(_ssidStored);
 
-  Serial.printf("Trying to connect to Wifi:%s\n",_ssidStored);
+  messageLog("Trying to connect to Wifi:%s\n",_ssidStored);
 
   //While loop inside waitForConnectResult, with a timeout parameter
   if(WiFi.waitForConnectResult(8000) != WL_CONNECTED)
   {
     _wifiStatus = WIFI_STATUS::ERROR;  
-    Serial.printf("Failed connection to: %s, continuing to soft AP.\n",_ssidStored);
+    messageLog("Failed to connect to Wifi:%s\n",_ssidStored);
 
     startCaptivePortal();
     return false;
   }
 
-  Serial.printf("Connected to: %s\n", _ssidStored);
+  messageLog("Connected to: %s\n", _ssidStored);
 
   _wifiStatus = WIFI_STATUS::CONNECTED;
   NVS_SaveWifiSettings();  
@@ -77,7 +77,7 @@ void EasyWifi::scanNetworks()
   _scanStatus = SCAN_STATUS::RUNNING;
   _avaibleNetworks = WiFi.scanNetworks();
 
-  Serial.printf("Scan Found %d networks\n", _avaibleNetworks);
+  messageLog("Scan found %d networks",_avaibleNetworks);
   _scanStatus = SCAN_STATUS::FINISHED;
 }
 
@@ -87,7 +87,7 @@ bool EasyWifi::NVS_RetrieveWifiData()
   
   if(!(_wifiDataNVS.isKey(NVS_KEY_SSID))) 
   {
-    Serial.printf("No SSID found on NVS memory\n");
+    messageLog("No SSID found on NVS memory");
     _wifiDataNVS.end();
     return false;
   }
@@ -100,7 +100,7 @@ bool EasyWifi::NVS_RetrieveWifiData()
   //Check if SSID Exists
   if(ssidLength <= 0)
   {
-    Serial.println("Error: SSID retrieval failed or empty.");
+    messageLog("Error: SSID retrieval failed or empty.");
     _wifiDataNVS.end();
     return false;
   }
@@ -108,13 +108,13 @@ bool EasyWifi::NVS_RetrieveWifiData()
   //Check if Password is Encrypted and correctly retrieved
   if(_isProtected && passwdLength <= 0)
   {
-    Serial.println("Error: Password retrieval failed or empty for encrypted network.");
+    messageLog("Error: Password retrieval failed or empty for encrypted network.");
     _wifiDataNVS.end();
     return false;
   }
   
   _wifiDataNVS.end();
-  Serial.printf("SSID Found: %s\n",_ssidStored); 
+  messageLog("SSID Found: %s",_ssidStored);
   return true;
 }
 
@@ -124,12 +124,12 @@ bool EasyWifi::NVS_Clear()
 
   if(_wifiDataNVS.clear() == false)
   {
-    Serial.println("Error while cleaning NVS");
+    messageLog("Error while cleaning NVS");
     _wifiDataNVS.end();
     return false;  
   }
 
-  Serial.println("NVS Cleared");
+  messageLog("NVS Cleared");
   _wifiDataNVS.end();
   return true; 
 }
@@ -153,13 +153,28 @@ bool EasyWifi::NVS_SaveWifiSettings()
 
   if(!ssidCheck || !isProtectedCheck || !passwordCheck)
   {
-    Serial.println("Error saving data in NVS");
+    messageLog("Error saving data in NVS");
     return false;
   }
 
 
-  Serial.printf("SSID: %s saved on NVS\n",_ssidStored);
+  messageLog("SSID: %s saved on NVS",_ssidStored);
   _wifiDataNVS.end();
   return true;
 }
 
+#ifdef EASYWIFI_MESSAGE_LOG
+///@brief Write a message to the Serial interface
+///@param format The message to be written
+///@param ... The arguments to be inserted in the message
+void EasyWifi::messageLog(const char* format, ...) {
+    char buffer[128]; //Temp buffer
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    Serial.println(buffer);
+}
+#else
+void EasyWifi::messageLog(const char* format, ...) {}
+#endif

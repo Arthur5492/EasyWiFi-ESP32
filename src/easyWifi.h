@@ -1,36 +1,13 @@
-/*
- EasyWifi.h Handles Wi-Fi management for ESP32 devices
- Copyright (c) 2025 Arthur Fernandes. All right reserved.
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
 #pragma once
+
+// #define EASYWIFI_LITTLEFS //Uncomment to use LittleFS instead of PROGMEM for statis routes
+#define EASYWIFI_MESSAGE_LOG //Uncomment to enable message log
 
 #include <Arduino.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <DNSServer.h>
 #include <Preferences.h>
-
-/* Uncomment the #define to use LittleFS instead of PROGMEM, LittleFS is better when the compile time become bigger
-! Don't forget to copy /data folder in EasyWifi directory to your root folder
-! Don't forget to add: board_build.filesystem = littlefs inside platformio.ini
-? For more information check: https://docs.platformio.org/en/latest/platforms/espressif32.html#uploading-files-to-file-system
-*/
-
-//#define EASYWIFI_LITTLEFS 
 
 #ifdef EASYWIFI_LITTLEFS 
   #include <LittleFS.h>
@@ -77,6 +54,7 @@ class EasyWifi
     void update(); //Check all events
     bool connectWifi(bool disableautoreconnect);
     void scanNetworks();
+    void messageLog(const char* format, ...);
 
     //Captive Portal
     void startCaptivePortal(); 

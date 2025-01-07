@@ -2,7 +2,7 @@ import gzip
 import os
 
 # Input and output directories
-script_dir = os.path.dirname(os.path.abspath(__file__)) #Script directory
+script_dir = os.getcwd()
 input_path = os.path.join(script_dir, "data/easyWifi")  # Folder where the input files are located
 output_path = os.path.join(script_dir, "src")            # Folder where the .h file will be saved
 output_header = os.path.join(output_path, "frontend.h")  # Name of the final .h file

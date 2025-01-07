@@ -30,7 +30,7 @@ void EasyWifi::startCaptivePortal()
   _server->begin();
   isCaptivePortalEnabled = true;
   _serverStartTime = millis();
-  Serial.println("Captive Portal initializated\n");
+  messageLog("Captive Portal initializated\n");
 }
 
 void EasyWifi::serveScanRoutes()
@@ -81,7 +81,7 @@ void EasyWifi::checkScanController(AsyncWebServerRequest *request)
       if(_avaibleNetworks > 0)
         request->send(200, "application/json", sendJsonNetworks());
       else
-        Serial.printf("Error, no networks found to process Json, _avaibleNetworks: %d\n",_avaibleNetworks);
+        messageLog("Error, no networks found to process Json, _avaibleNetworks: %d\n",_avaibleNetworks);
 
       _scanStatus = SCAN_STATUS::NOT_RUNNING;
       _avaibleNetworks = -1; //Reset variable
@@ -122,7 +122,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
   ssid.toCharArray(_ssidStored, SSID_MAX_LENGTH);
   passwd.toCharArray(_passwdStored, PASSWORD_MAX_LENGTH);
 
-  Serial.printf("ssid found: %s\n", _ssidStored);
+  messageLog("ssid found: %s\n", _ssidStored);
 
   request->send(200, "text/plain", "Data received, trying to connect to Wi-Fi...");
 
@@ -168,7 +168,7 @@ void EasyWifi::serveStaticRoutes()
 {
 #ifdef EASYWIFI_LITTLEFS
   if(!LittleFS.begin() && LittleFS.open("/easyWifi", "r")){
-    Serial.println("LittleFS Failed, please check if the /data/easyWifi folder exists");
+    messageLog("LittleFS Failed, please check if the /data/easyWifi folder exists");
     while(true) delay(10); //Stop the program 
   }
 
@@ -237,7 +237,7 @@ void EasyWifi::logoutCaptivePortal()
 
   freePointers();
   WiFi.mode(WIFI_STA); //Back to station mode
-  Serial.printf("Captive Portal ended\n");
+  messageLog("Captive Portal ended\n");
 }
 
 void EasyWifi::freePointers()
@@ -259,7 +259,7 @@ void EasyWifi::checkCaptivePortalTimeout()
 {
   if(millis() - _serverStartTime >= _CaptivePortalTimeout)
   {
-    Serial.println("Captive Portal Timeout, shutting down...");
+    messageLog("Captive Portal Timeout, shutting down...");
     logoutCaptivePortal();
     return;
   } 
