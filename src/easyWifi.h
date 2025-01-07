@@ -24,14 +24,13 @@
 #include <DNSServer.h>
 #include <Preferences.h>
 
-/* Uncomment to use LittleFS instead of PROGMEM, LittleFS is better when the compile time become bigger
+/* Uncomment the #define to use LittleFS instead of PROGMEM, LittleFS is better when the compile time become bigger
 ! Don't forget to copy /data folder in EasyWifi directory to your root folder
 ! Don't forget to add: board_build.filesystem = littlefs inside platformio.ini
 ? For more information check: https://docs.platformio.org/en/latest/platforms/espressif32.html#uploading-files-to-file-system
 */
 
 //#define EASYWIFI_LITTLEFS 
-
 
 #ifdef EASYWIFI_LITTLEFS 
   #include <LittleFS.h>

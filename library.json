@@ -1,6 +1,6 @@
 {
   "name": "EasyWifi",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Wireless WiFi Connection Handler for ESP32, using AsyncWebServer,EEPROM or LittleFS and Preferences",
   "keywords": ["wifimanager", "esp32", "captive-portal", "wifi-credentials", "littlefs", "asyncwebserver","flash"],
   "repository": {
@@ -20,7 +20,9 @@
   "platforms": ["espressif32"],
   "headers": "easyWifi.h",
   "dependencies": {
-    "ESP Async WebServer": "^1.2.4"
+    "owner": "me-no-dev",
+    "name": "ESP Async WebServer",
+    "version": "^1.2.4"
   },
   "export":{
     "exclude": ["src/main.cpp"]
@@ -28,5 +30,4 @@
   "scripts": {
     "postinstall":"gen_frontend_header.py"
   }
-
 }

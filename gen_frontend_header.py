@@ -1,12 +1,10 @@
 import gzip
 import os
-from SCons.Script import DefaultEnvironment
-
-Import("env")
 
 # Input and output directories
-input_path = "./data/easyWifi"  # Folder where the input files are located
-output_path = "./src/"          # Folder where the .h file will be saved
+script_dir = os.path.dirname(os.path.abspath(__file__)) #Script directory
+input_path = os.path.join(script_dir, "data/easyWifi")  # Folder where the input files are located
+output_path = os.path.join(script_dir, "src")            # Folder where the .h file will be saved
 output_header = os.path.join(output_path, "frontend.h")  # Name of the final .h file
 
 # Function to compress a file
