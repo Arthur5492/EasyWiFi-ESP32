@@ -1,6 +1,6 @@
 {
   "name": "EasyWifi",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Wireless WiFi Connection Handler, using AsyncWebServer,LittleFS, Preferences for ESP32",
   "keywords": ["wifi", "esp32", "captive portal", "easywifi", "iot"],
   "repository": {
@@ -32,7 +32,8 @@
       "base": "examples/checkStoredData"
     }
   ],
-  "export":{
-    "exclude":"data"
+  "scripts": {
+    "postinstall":"gen_frontend_header.py"
   }
+
 }

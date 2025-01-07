@@ -23,9 +23,21 @@
 #include <ESPAsyncWebServer.h>
 #include <DNSServer.h>
 #include <Preferences.h>
-#include <LittleFS.h>
 
-//TODO: Implement private debug methods
+/* Uncomment to use LittleFS instead of PROGMEM, LittleFS is better when the compile time become bigger
+! Don't forget to copy /data folder in EasyWifi directory to your root folder
+! Don't forget to add: board_build.filesystem = littlefs inside platformio.ini
+? For more information check: https://docs.platformio.org/en/latest/platforms/espressif32.html#uploading-files-to-file-system
+*/
+
+//#define EASYWIFI_LITTLEFS 
+
+
+#ifdef EASYWIFI_LITTLEFS 
+  #include <LittleFS.h>
+#endif
+
+//TODO: Implement private debug method
 //TODO: Implement embedded frontend, maybe with platformio.ini: board_build.embed_txtfiles or directly with EEPROM
 //TODO: Implement multi wifi stored, perhaps with a json in littlefs(tip: setting up scanNetworks first and then check if any ssid stored matches with networks discovered)
 
@@ -78,7 +90,7 @@ class EasyWifi
     void serveScanRoutes();
     void serveWifiRoutes();
     void serveStaticRoutes();
-
+    
     // Web Server Controllers
     void checkScanController(AsyncWebServerRequest *request);
     void SaveWiFiDataController(AsyncWebServerRequest *request);
@@ -121,7 +133,6 @@ class EasyWifi
     bool _isProtected = false; //Network is protected or Open(no password)
     
     //Helpers
-    String EASYWIFI_ROUTE = "/easyWifi";
     int16_t _avaibleNetworks = -1;
     SCAN_STATUS _scanStatus = SCAN_STATUS::NOT_RUNNING;
     WIFI_STATUS _wifiStatus = WIFI_STATUS::IDLE;

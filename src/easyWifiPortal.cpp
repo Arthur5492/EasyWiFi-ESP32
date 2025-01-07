@@ -1,5 +1,9 @@
 #include "easyWifi.h"
 
+#ifndef EASYWIFI_LITTLEFS
+  #include "frontend.h"
+#endif
+
 void EasyWifi::startCaptivePortal()
 {
   if(isCaptivePortalEnabled) //If server is already running
@@ -154,23 +158,48 @@ void EasyWifi::checkWiFiStatusController(AsyncWebServerRequest *request)
 */
 void EasyWifi::redirectToIpController(AsyncWebServerRequest *request)
 {
-  String apIPString = WiFi.softAPIP().toString();
-  String correctUrl = "http://" + apIPString + EASYWIFI_ROUTE;
+  String apIPString = "http://" + WiFi.softAPIP().toString();
 
   if ( !(request->host().equals(apIPString)) ) //Check if user isn't at Ip url
-    request->redirect(correctUrl);
+    request->redirect(apIPString);
 }
 
 void EasyWifi::serveStaticRoutes()
 {
-    if(!LittleFS.begin() && LittleFS.open("/easyWifi/", "r")){
-        Serial.println("LittleFS Failed, please check if the /data/easyWifi folder exists");
-        while(true) delay(10); //Stop the program 
-    }
+#ifdef EASYWIFI_LITTLEFS
+  if(!LittleFS.begin() && LittleFS.open("/easyWifi", "r")){
+    Serial.println("LittleFS Failed, please check if the /data/easyWifi folder exists");
+    while(true) delay(10); //Stop the program 
+  }
 
   // All static routes are served from /easyWifi folder
-  _server->serveStatic("/easyWifi", LittleFS , "/easyWifi/")
+  _server->serveStatic("/", LittleFS , "/easyWifi")
         .setDefaultFile("index.htm");
+#else
+  _server->on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(
+      200, "text/html",index_htm_gz,index_htm_gz_len);
+
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });
+
+  _server->on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(
+      200, "text/css", style_css_gz,style_css_gz_len);
+
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });
+
+  _server->on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(
+      200, "text/javascript", script_js_gz,script_js_gz_len);
+      
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });  
+#endif  
 }
 
 String EasyWifi::sendJsonNetworks()
