@@ -2,6 +2,7 @@
 <p align="center">
 <img src="./images/app.png" alt="App">
 </p>
+
 **EasyWifi** is a versatile Wi-Fi connection manager designed for ESP32 devices. It simplifies Wi-Fi management for IoT projects by enabling features like multiple Wi-Fi credentials, captive portal configuration, and persistent storage using NVS.
 
 ## Features

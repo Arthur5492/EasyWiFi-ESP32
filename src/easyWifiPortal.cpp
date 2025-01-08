@@ -9,7 +9,11 @@ void EasyWifi::startCaptivePortal()
   if(isCaptivePortalEnabled) //If server is already running
     return;
 
-  WiFi.mode(WIFI_AP_STA); //AP for cap portal STA for scanNetworks
+
+  WiFi.mode(WIFI_AP_STA); //AP for cap portal STA for scanNetworks - Redundant but better explicited than not
+
+  scanNetworks(); //Scan networks to show on first captive portal opening
+  
   WiFi.softAP(_CaptivePortalSSID, _CaptivePortalPassword);
   
   _server = new AsyncWebServer(80);

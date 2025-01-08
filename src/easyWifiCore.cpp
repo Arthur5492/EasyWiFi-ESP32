@@ -12,12 +12,9 @@ void EasyWifi::setup(const char* ssid, const char* passwd, unsigned long timeout
   if(timeout!=0)      _CaptivePortalTimeout = timeout;
   
   if(NVS_RetrieveWifiData())
-    connectWifi(true);
-  else
-  {
-    scanNetworks(); 
+    connectWifi();
+  else 
     startCaptivePortal();
-  }
 }
 
 /// @brief Check all events, including the state machine 
@@ -32,19 +29,17 @@ void EasyWifi::update()
     _dnsServer->processNextRequest(); 
 
   if(_wifiStatus == WIFI_STATUS::READY_TO_CONNECT)
-    connectWifi(true);
+    connectWifi();
 
   if(_scanStatus == SCAN_STATUS::READY_TO_SCAN)
     scanNetworks();
 }
 
-/// @param disableautoreconnect Disable auto reconnect if conn failed
 /// @return True if connection was successful, false if Failed
-bool EasyWifi::connectWifi(bool disableautoreconnect)
+bool EasyWifi::connectWifi()
 {
   _wifiStatus = WIFI_STATUS::CONNECTING;
-  if(disableautoreconnect)
-    WiFi.setAutoReconnect(false); // avoid reconnecting to network if WiFi conn fails, will be re-enabled after connection
+  WiFi.setAutoReconnect(false); // avoid reconnecting to network if WiFi conn fails, will be re-enabled after connection
 
   if(_isProtected)
     WiFi.begin(_ssidStored,_passwdStored);

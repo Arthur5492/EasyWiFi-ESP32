@@ -51,7 +51,7 @@ class EasyWifi
     void setup(const char* ssid=nullptr, const char* passwd=nullptr, unsigned long timeout=0); 
 
     void update(); //Check all events
-    bool connectWifi(bool disableautoreconnect);
+    bool connectWifi();
     void scanNetworks();
     void messageLog(const char* format, ...);
 
