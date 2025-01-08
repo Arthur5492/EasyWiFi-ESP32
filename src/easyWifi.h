@@ -13,9 +13,8 @@
   #include <LittleFS.h>
 #endif
 
-//TODO: Implement private debug method
-//TODO: Implement embedded frontend, maybe with platformio.ini: board_build.embed_txtfiles or directly with EEPROM
-//TODO: Implement multi wifi stored, perhaps with a json in littlefs(tip: setting up scanNetworks first and then check if any ssid stored matches with networks discovered)
+//TODO: Simplify the data stored in NVS, removing the isProtected
+//TODO: Implement multi wifi stored, perhaps with a wifiParam struct or a json in littlefs(tip: setting up scanNetworks first and then check if any ssid stored matches with networks discovered)
 
 #define AP_DEFAULT_SSID "Configure ESP32"
 #define AP_DEFAULT_PASSWORD ""
