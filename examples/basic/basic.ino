@@ -1,8 +1,7 @@
 /*
-* This is a basic example of how to use the easyWifi library in platformio.
-! On Arduino IDE you need to manually run the gen_frontend_header.py once to generate the frontend.h file
+* This is a basic example of how to use the easyWifi library.
 */
-
+#include <Arduino.h>
 #include <easyWifi.h>
 
 // Optional: Define a custom timeout for the Captive Portal (in milliseconds)

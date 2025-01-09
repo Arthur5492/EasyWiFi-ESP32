@@ -1,5 +1,5 @@
 // Description: This example shows how to check the stored data in the ESP32's flash memory.
-
+#include <Arduino.h>
 #include <easyWifi.h>
 
 void setup()

@@ -12,7 +12,8 @@
 *https://github.com/lorol/LITTLEFS
 */
 
-#define EASYWIFI_LITTLEFS //This is needed
+#define EASYWIFI_LITTLEFS //Needed to set up LittleFS
+#include <Arduino.h>
 #include <easyWifi.h>
 
 void setup()
