@@ -1,13 +1,11 @@
 #pragma once
 
-// #define EASYWIFI_LITTLEFS //Uncomment to use LittleFS instead of PROGMEM for statis routes
-#define EASYWIFI_MESSAGE_LOG //Uncomment to enable message log
-
 #include <Arduino.h>
-#include <WiFi.h>
-#include <ESPAsyncWebServer.h>
-#include <DNSServer.h>
-#include <Preferences.h>
+#include <WiFi.h> //WiFi Library
+#include <ESPAsyncWebServer.h> //Async Web Server
+#include <DNSServer.h> //Local DNS Server used for redirecting all requests to the configuration portal
+#include <Preferences.h> //To store Wi-Fi Credentials
+#include <esp_log.h> //For logging
 
 #ifdef EASYWIFI_LITTLEFS 
   #include <LittleFS.h>
@@ -23,6 +21,11 @@
 //SSID and Password default max length according to WLAN standart
 #define SSID_MAX_LENGTH     32
 #define PASSWORD_MAX_LENGTH 64
+
+
+namespace EASYWIFI{
+
+static const char* APP = "EasyWifi";
 
 enum class WIFI_STATUS{
   ERROR = -1,
@@ -53,7 +56,6 @@ class EasyWifi
     void update(); //Check all events
     bool connectWifi();
     void scanNetworks();
-    void messageLog(const char* format, ...);
 
     //Captive Portal
     void startCaptivePortal(); 
@@ -122,5 +124,7 @@ class EasyWifi
     static constexpr const bool  NVS_READ_ONLY       = true;
 };
 
+};
+
 //Singleton
-extern EasyWifi easyWifi;
+extern EASYWIFI::EasyWifi easyWifi;

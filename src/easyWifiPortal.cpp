@@ -1,6 +1,8 @@
 #include "easyWifi.h"
 
-#ifndef EASYWIFI_LITTLEFS
+using namespace EASYWIFI;
+
+#ifndef EASYWIFI_LITTLEFS //Include frontend that will be stored in RAM if not using LittleFS
   #include "frontend.h"
 #endif
 
@@ -9,6 +11,7 @@ void EasyWifi::startCaptivePortal()
   if(isCaptivePortalEnabled) //If server is already running
     return;
 
+  ESP_LOGI(APP, "Starting Captive Portal");
 
   WiFi.mode(WIFI_AP_STA); //AP for cap portal STA for scanNetworks - Redundant but better explicited than not
 
@@ -34,13 +37,14 @@ void EasyWifi::startCaptivePortal()
   _server->begin();
   isCaptivePortalEnabled = true;
   _serverStartTime = millis();
-  messageLog("Captive Portal initializated\n");
+  ESP_LOGI(APP,"Captive Portal initializated\n");
 }
 
 void EasyWifi::serveScanRoutes()
 {
   _server->on("/start-scan", HTTP_GET, [this](AsyncWebServerRequest *request)
   {
+    ESP_LOGV(APP,"Scan Requested");
     _scanStatus = SCAN_STATUS::READY_TO_SCAN;
     request->send(200,"text/plain","WiFi Scan Started");
   });
@@ -54,6 +58,7 @@ void EasyWifi::serveScanRoutes()
 void EasyWifi::serveWifiRoutes()
 {
   _server->on("/start-wifi", HTTP_POST, [this](AsyncWebServerRequest *request) {
+    ESP_LOGV(APP,"WiFi Connection Requested from route");
     SaveWiFiDataController(request);
   });
 
@@ -85,13 +90,14 @@ void EasyWifi::checkScanController(AsyncWebServerRequest *request)
       if(_avaibleNetworks > 0)
         request->send(200, "application/json", sendJsonNetworks());
       else
-        messageLog("Error, no networks found to process Json, _avaibleNetworks: %d\n",_avaibleNetworks);
+        ESP_LOGE(APP,"Error, no networks found to process Json, _avaibleNetworks: %d\n",_avaibleNetworks);
 
       _scanStatus = SCAN_STATUS::NOT_RUNNING;
       _avaibleNetworks = -1; //Reset variable
     break;
 
     default:
+      ESP_LOGE(APP,"No matching case in checkScanController");
       request->send(500, "text/plain", "Error while scanning networks");
     break;
   };
@@ -126,7 +132,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
   ssid.toCharArray(_ssidStored, SSID_MAX_LENGTH);
   passwd.toCharArray(_passwdStored, PASSWORD_MAX_LENGTH);
 
-  messageLog("ssid found: %s\n", _ssidStored);
+  ESP_LOGV("ssid found in : %s\n", _ssidStored);
 
   request->send(200, "text/plain", "Data received, trying to connect to Wi-Fi...");
 
@@ -241,7 +247,7 @@ void EasyWifi::logoutCaptivePortal()
 
   freePointers();
   WiFi.mode(WIFI_STA); //Back to station mode
-  messageLog("Captive Portal ended\n");
+  ESP_LOGI(APP,"Captive Portal ended\n");
 }
 
 void EasyWifi::freePointers()
@@ -263,7 +269,7 @@ void EasyWifi::checkCaptivePortalTimeout()
 {
   if(millis() - _serverStartTime >= _CaptivePortalTimeout)
   {
-    messageLog("Captive Portal Timeout, shutting down...");
+    ESP_LOGI(APP,"Captive Portal Timeout, shutting down...");
     logoutCaptivePortal();
     return;
   } 

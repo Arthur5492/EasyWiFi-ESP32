@@ -2,6 +2,8 @@
 
 #include <easyWifi.h>
 
+using namespace EASYWIFI;
+
 //Singleton
 EasyWifi easyWifi;
 
@@ -38,6 +40,8 @@ void EasyWifi::update()
 /// @return True if connection was successful, false if Failed
 bool EasyWifi::connectWifi()
 {
+  ESP_LOGV(APP, "Trying Connection to %s with password: %s", _ssidStored, _passwdStored);
+
   _wifiStatus = WIFI_STATUS::CONNECTING;
   WiFi.setAutoReconnect(false); // avoid reconnecting to network if WiFi conn fails, will be re-enabled after connection
 
@@ -46,19 +50,17 @@ bool EasyWifi::connectWifi()
   else
     WiFi.begin(_ssidStored);
 
-  messageLog("Trying to connect to Wifi:%s\n",_ssidStored);
-
   //While loop inside waitForConnectResult, with a timeout parameter
   if(WiFi.waitForConnectResult(8000) != WL_CONNECTED)
   {
     _wifiStatus = WIFI_STATUS::ERROR;  
-    messageLog("Failed to connect to Wifi:%s\n",_ssidStored);
+    ESP_LOGE(APP,"Failed to connect to Wifi:%s\n",_ssidStored);
 
     startCaptivePortal();
     return false;
   }
 
-  messageLog("Connected to: %s\n", _ssidStored);
+  ESP_LOGI(APP,"Connected to: %s\n", _ssidStored);
 
   _wifiStatus = WIFI_STATUS::CONNECTED;
   NVS_SaveWifiSettings();  
@@ -69,20 +71,24 @@ bool EasyWifi::connectWifi()
 //Blocking function, it haves state machine to avoid blocking the server
 void EasyWifi::scanNetworks()
 {
+  ESP_LOGV(APP, "Scanning Networks");
+
   _scanStatus = SCAN_STATUS::RUNNING;
   _avaibleNetworks = WiFi.scanNetworks();
 
-  messageLog("Scan found %d networks",_avaibleNetworks);
+  ESP_LOGV(APP,"Scan found %d networks",_avaibleNetworks);
   _scanStatus = SCAN_STATUS::FINISHED;
 }
 
 bool EasyWifi::NVS_RetrieveWifiData()
 { 
+  ESP_LOGV(APP, "Retrieving WiFi data from NVS");
+
   _wifiDataNVS.begin(NVS_NAMESPACE,NVS_READ_ONLY);
   
   if(!(_wifiDataNVS.isKey(NVS_KEY_SSID))) 
   {
-    messageLog("No SSID found on NVS memory");
+    ESP_LOGI(APP,"No SSID found on NVS memory");
     _wifiDataNVS.end();
     return false;
   }
@@ -95,7 +101,7 @@ bool EasyWifi::NVS_RetrieveWifiData()
   //Check if SSID Exists
   if(ssidLength <= 0)
   {
-    messageLog("Error: SSID retrieval failed or empty.");
+    ESP_LOGE(APP,"Error: SSID retrieval failed or empty.");
     _wifiDataNVS.end();
     return false;
   }
@@ -103,34 +109,36 @@ bool EasyWifi::NVS_RetrieveWifiData()
   //Check if Password is Encrypted and correctly retrieved
   if(_isProtected && passwdLength <= 0)
   {
-    messageLog("Error: Password retrieval failed or empty for encrypted network.");
+    ESP_LOGE(APP,"Error: Password retrieval failed or empty for encrypted network.");
     _wifiDataNVS.end();
     return false;
   }
   
   _wifiDataNVS.end();
-  messageLog("SSID Found: %s",_ssidStored);
+  ESP_LOGI(APP,"SSID Found: %s",_ssidStored);
   return true;
 }
 
 bool EasyWifi::NVS_Clear() 
 {
+  ESP_LOGI(APP, "Clearing NVS Memory");
   _wifiDataNVS.begin(NVS_NAMESPACE, NVS_READ_WRITE);
 
   if(_wifiDataNVS.clear() == false)
   {
-    messageLog("Error while cleaning NVS");
+    ESP_LOGE(APP,"Error while cleaning NVS");
     _wifiDataNVS.end();
     return false;  
   }
 
-  messageLog("NVS Cleared");
+  ESP_LOGI(APP,"NVS Cleared");
   _wifiDataNVS.end();
   return true; 
 }
 
 bool EasyWifi::NVS_SaveWifiSettings()
 {
+  ESP_LOGI(APP, "Saving WiFi data on NVS");
   _wifiDataNVS.begin(NVS_NAMESPACE,NVS_READ_WRITE);
 
   _wifiDataNVS.clear();
@@ -148,28 +156,12 @@ bool EasyWifi::NVS_SaveWifiSettings()
 
   if(!ssidCheck || !isProtectedCheck || !passwordCheck)
   {
-    messageLog("Error saving data in NVS");
+    ESP_LOGE(APP,"Error saving data in NVS");
     return false;
   }
 
 
-  messageLog("SSID: %s saved on NVS",_ssidStored);
+  ESP_LOGI(APP,"SSID: %s saved on NVS",_ssidStored);
   _wifiDataNVS.end();
   return true;
 }
-
-#ifdef EASYWIFI_MESSAGE_LOG
-///@brief Write a message to the Serial interface
-///@param format The message to be written
-///@param ... The arguments to be inserted in the message
-void EasyWifi::messageLog(const char* format, ...) {
-    char buffer[128]; //Temp buffer
-    va_list args;
-    va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
-    va_end(args);
-    Serial.println(buffer);
-}
-#else
-void EasyWifi::messageLog(const char* format, ...) {}
-#endif
