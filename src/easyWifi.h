@@ -11,7 +11,7 @@
   #include <LittleFS.h>
 #endif
 
-//TODO: Simplify the data stored in NVS, removing the isProtected
+//TODO: Implement websocket method instead of simple https requests
 //TODO: Implement multi wifi stored, perhaps with a wifiParam struct or a json in littlefs(tip: setting up scanNetworks first and then check if any ssid stored matches with networks discovered)
 
 #define AP_DEFAULT_SSID "Configure ESP32"
