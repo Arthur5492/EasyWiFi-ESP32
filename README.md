@@ -73,6 +73,10 @@ void loop() {
 
 This project is still under development. If you find any bugs or have ideas for improvements, please create an issue or submit a pull request. Thank you!
 
+# TODO List:
+  - Implement websocket method instead of simple https requests, so we can remove all state machine logic!
+  - Add more wifi's networks to NVS, storing structs instead of separated values.
+
 
 
 
