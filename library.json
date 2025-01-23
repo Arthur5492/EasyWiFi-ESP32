@@ -20,9 +20,9 @@
   "platforms": ["espressif32"],
   "headers": "easyWifi.h",
   "dependencies": {
-    "owner": "me-no-dev",
-    "name": "ESP Async WebServer",
-    "version": "^1.2.4"
+    "owner": "ESP32Async",
+    "name": "ESPAsyncWebServer",
+    "version": "^3.6.0"
   },
   "export":{
     "exclude": ["src/main.cpp"]

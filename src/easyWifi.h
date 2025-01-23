@@ -93,7 +93,7 @@ class EasyWifi
     
   private:
     
-    //?User configs
+    // User configs
     String _CaptivePortalSSID = AP_DEFAULT_SSID; //sry for using String
     String _CaptivePortalPassword = AP_DEFAULT_PASSWORD;
     unsigned long _CaptivePortalTimeout = AP_DEFAULT_TIMEOUT;
@@ -104,7 +104,7 @@ class EasyWifi
     unsigned long _serverStartTime = 0;
     bool isCaptivePortalEnabled = false;
     
-    //?NVS (Stores Wi-Fi Credentials)
+    // NVS (Stores Wi-Fi Credentials)
     Preferences _wifiDataNVS;
     char _ssidStored[SSID_MAX_LENGTH] = {0}; //Network SSID
     char _passwdStored[PASSWORD_MAX_LENGTH] = {0}; //Network Password
