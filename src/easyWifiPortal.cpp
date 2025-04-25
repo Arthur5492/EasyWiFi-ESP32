@@ -37,7 +37,7 @@ void EasyWifi::startCaptivePortal()
   _server->begin();
   isCaptivePortalEnabled = true;
   _serverStartTime = millis();
-  ESP_LOGI(APP,"Captive Portal initializated\n");
+  ESP_LOGI(APP,"Captive Portal initializated at: http://%s\n",WiFi.softAPIP().toString().c_str());
 }
 
 void EasyWifi::serveScanRoutes()
@@ -132,7 +132,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
   ssid.toCharArray(_ssidStored, SSID_MAX_LENGTH);
   passwd.toCharArray(_passwdStored, PASSWORD_MAX_LENGTH);
 
-  ESP_LOGV("ssid found in : %s\n", _ssidStored);
+  ESP_LOGV(APP,"ssid found in : %s\n", _ssidStored);
 
   request->send(200, "text/plain", "Data received, trying to connect to Wi-Fi...");
 
@@ -178,7 +178,7 @@ void EasyWifi::serveStaticRoutes()
 {
 #ifdef EASYWIFI_LITTLEFS
   if(!LittleFS.begin() && LittleFS.open("/easyWifi", "r")){
-    messageLog("LittleFS Failed, please check if the /data/easyWifi folder exists");
+    ESP_LOGE(APP,"LittleFS Failed, please check if the /data/easyWifi folder exists");
     while(true) delay(10); //Stop the program 
   }
 
