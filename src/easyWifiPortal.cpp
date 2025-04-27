@@ -8,7 +8,7 @@ using namespace EASYWIFI;
 
 void EasyWifi::startCaptivePortal()
 {
-  if(isCaptivePortalEnabled) //If server is already running
+  if(_isCaptivePortalEnabled) //If server is already running
     return;
 
   ESP_LOGI(APP, "Starting Captive Portal");
@@ -31,11 +31,10 @@ void EasyWifi::startCaptivePortal()
     redirectToIpController(request);
   });
   
-  
   serveStaticRoutes();
 
   _server->begin();
-  isCaptivePortalEnabled = true;
+  _isCaptivePortalEnabled = true;
   _serverStartTime = millis();
   ESP_LOGI(APP,"Captive Portal initializated at: http://%s\n",WiFi.softAPIP().toString().c_str());
 }
@@ -151,7 +150,6 @@ void EasyWifi::checkWiFiStatusController(AsyncWebServerRequest *request)
 
     case WIFI_STATUS::CONNECTED:
       request->send(200, "text/plain", "Connected to Wifi! \n You are free to go ;)");
-      logoutCaptivePortal();
     break;
 
     case WIFI_STATUS::ERROR:
@@ -235,7 +233,7 @@ String EasyWifi::sendJsonNetworks()
 
 void EasyWifi::logoutCaptivePortal()
 {
-  isCaptivePortalEnabled = false;
+  _isCaptivePortalEnabled = false;
 
   if(_server)
     _server->end();

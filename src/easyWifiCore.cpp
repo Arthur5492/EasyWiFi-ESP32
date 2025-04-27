@@ -22,14 +22,18 @@ void EasyWifi::setup(const char* ssid, const char* passwd, unsigned long timeout
 /// @brief Check all events, including the state machine 
 void EasyWifi::update()
 { 
-  if(!isCaptivePortalEnabled)
+  if(!_isCaptivePortalEnabled)
     return;
 
   checkCaptivePortalTimeout();
+
   
   if(_dnsServer) 
-    _dnsServer->processNextRequest(); 
-
+  _dnsServer->processNextRequest(); 
+  
+  if(_wifiStatus == WIFI_STATUS::CONNECTED)
+    logoutCaptivePortal();
+    
   if(_wifiStatus == WIFI_STATUS::READY_TO_CONNECT)
     connectWifi();
 

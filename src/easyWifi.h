@@ -102,7 +102,7 @@ class EasyWifi
     AsyncWebServer *_server = nullptr; //Pointer to reduce memory usage
     DNSServer *_dnsServer = nullptr;
     unsigned long _serverStartTime = 0;
-    bool isCaptivePortalEnabled = false;
+    bool _isCaptivePortalEnabled = false;
     
     // NVS (Stores Wi-Fi Credentials)
     Preferences _wifiDataNVS;
