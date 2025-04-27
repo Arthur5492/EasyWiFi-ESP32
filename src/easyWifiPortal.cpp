@@ -23,16 +23,16 @@ void EasyWifi::startCaptivePortal()
   _dnsServer = new DNSServer();
   _dnsServer->start(53, "*", WiFi.softAPIP());
 
-  
-  serveStaticRoutes();
-
-  _server->onNotFound([this](AsyncWebServerRequest *request) {
-      redirectToIpController(request);
-  });
-
   serveScanRoutes();
   serveWifiRoutes();
-
+  
+  
+  _server->onNotFound([this](AsyncWebServerRequest *request) {
+    redirectToIpController(request);
+  });
+  
+  
+  serveStaticRoutes();
 
   _server->begin();
   isCaptivePortalEnabled = true;
@@ -179,7 +179,7 @@ void EasyWifi::serveStaticRoutes()
 #ifdef EASYWIFI_LITTLEFS
   if(!LittleFS.begin() && LittleFS.open("/easyWifi", "r")){
     ESP_LOGE(APP,"LittleFS Failed, please check if the /data/easyWifi folder exists");
-    while(true) delay(10); //Stop the program 
+    return;
   }
 
   // All static routes are served from /easyWifi folder
