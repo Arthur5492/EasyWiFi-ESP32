@@ -131,6 +131,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
   ssid.toCharArray(_ssidStored, SSID_MAX_LENGTH);
   passwd.toCharArray(_passwdStored, PASSWORD_MAX_LENGTH);
 
+//!TODO: what this log is about??
   ESP_LOGV(APP,"ssid found in : %s\n", _ssidStored);
 
   request->send(200, "text/plain", "Data received, trying to connect to Wi-Fi...");
