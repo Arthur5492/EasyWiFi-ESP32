@@ -88,7 +88,7 @@ void EasyWifi::checkScanController(AsyncWebServerRequest *request)
     case SCAN_STATUS::FINISHED: //That's what we want
       if(_avaibleNetworks > 0)
         request->send(200, "application/json", sendJsonNetworks());
-      else
+      else //!TODO: is not an error, just send to frontend handle
         ESP_LOGE(APP,"Error, no networks found to process Json, _avaibleNetworks: %d\n",_avaibleNetworks);
 
       _scanStatus = SCAN_STATUS::NOT_RUNNING;
