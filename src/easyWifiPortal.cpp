@@ -114,7 +114,7 @@ void EasyWifi::SaveWiFiDataController(AsyncWebServerRequest *request)
   String ssid = request->arg("ssid");
   String passwd = request->arg("password");
   _isProtected = request->arg("isProtected") == "1"; //"0" = Open Network, "1" = Encrypted Network
-
+//TODO: try to use only if(pass is empty, network is open
   //Check if the SSID is Empty
   if(ssid.length() <= 0)
   {
